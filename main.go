@@ -11,16 +11,6 @@ import (
 	"strings"
 )
 
-func exit(err error) {
-	if err == nil {
-		flag.Usage()
-	} else {
-		fmt.Fprintln(os.Stderr, err)
-	}
-
-	os.Exit(1)
-}
-
 func main() {
 	flag.Usage = func() {
 		w := flag.CommandLine.Output()
@@ -76,4 +66,14 @@ func run(r io.Reader, w io.Writer, column int, trimQuotes bool) {
 			}
 		}
 	}
+}
+
+func exit(err error) {
+	if err == nil {
+		flag.Usage()
+	} else {
+		fmt.Fprintln(os.Stderr, err)
+	}
+
+	os.Exit(1)
 }
