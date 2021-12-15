@@ -16,7 +16,12 @@ three
 3
 
 $ cat input2.txt
+a = "one";
+b = "two";
 
+$ coln 3 input2.txt
+one
+two
 ```
 
 ## Install
