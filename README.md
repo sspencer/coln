@@ -23,4 +23,4 @@ $ cat input2.txt
 
 Go makes it easy:
 
-   go install
+    go install
