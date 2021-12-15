@@ -18,3 +18,9 @@ three
 $ cat input2.txt
 
 ```
+
+## Install
+
+Go makes it easy:
+
+   go install
