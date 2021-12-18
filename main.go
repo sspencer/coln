@@ -58,7 +58,7 @@ func main() {
 	sum := flag.Bool("sum", false, "Calculate the sum of all numbers in the column")
 	avg := flag.Bool("avg", false, "Calculate the average of all numbers in the column")
 	mop := flag.Bool("map", false, "Count unique strings")
-	trimQuotes := flag.Bool("q", false, "Strip quotes")
+	trim := flag.Bool("q", false, "Trim quotes")
 	flag.Parse()
 
 	args := flag.Args()
@@ -73,7 +73,7 @@ func main() {
 
 	cfg := config{
 		column: column,
-		trim:   *trimQuotes,
+		trim:   *trim,
 		sum:    *sum,
 		avg:    *avg,
 		mop:    *mop,
@@ -95,13 +95,14 @@ func main() {
 	run(r, os.Stdout, cfg)
 }
 
+// print specified column and maybe perform sum/avg/map op
 func run(r io.Reader, w io.Writer, cfg config) {
 	var lines = bufio.NewScanner(r)
-	lines.Split(bufio.ScanLines)
 	var data []float64
 	uniqs := make(map[string]int)
-
 	computeStats := cfg.avg || cfg.sum
+
+	lines.Split(bufio.ScanLines)
 
 	for lines.Scan() {
 		words := bufio.NewScanner(bytes.NewReader(lines.Bytes()))
@@ -133,11 +134,6 @@ func run(r io.Reader, w io.Writer, cfg config) {
 	}
 
 	if cfg.mop {
-		/*
-			for k, v := range uniqs {
-				fmt.Fprintf(w, "%s: %d\n", k, v)
-			}
-		*/
 		prettyPrint(uniqs)
 	} else if len(data) > 0 {
 		if cfg.sum {
@@ -148,6 +144,7 @@ func run(r io.Reader, w io.Writer, cfg config) {
 	}
 }
 
+// sort and print word count map
 func prettyPrint(m map[string]int) {
 	var maxLenKey int
 	keys := make([]string, 0, len(m))
@@ -165,6 +162,7 @@ func prettyPrint(m map[string]int) {
 	}
 }
 
+// print err or usage to stderr and exit
 func exit(err error) {
 	if err == nil {
 		flag.Usage()
