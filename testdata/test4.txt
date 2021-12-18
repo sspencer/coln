@@ -1,0 +1,10 @@
+status = initializing
+status = started
+status = processing
+status = sending
+status = done
+status = sending
+status = processing
+status = done
+status = sending
+status = sending

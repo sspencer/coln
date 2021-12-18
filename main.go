@@ -9,6 +9,7 @@ import (
 	"io"
 	"math"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -43,6 +44,7 @@ type config struct {
 	trim   bool
 	avg    bool
 	sum    bool
+	mop    bool
 }
 
 func main() {
@@ -55,6 +57,7 @@ func main() {
 
 	sum := flag.Bool("sum", false, "Calculate the sum of all numbers in the column")
 	avg := flag.Bool("avg", false, "Calculate the average of all numbers in the column")
+	mop := flag.Bool("map", false, "Count unique strings")
 	trimQuotes := flag.Bool("q", false, "Strip quotes")
 	flag.Parse()
 
@@ -73,6 +76,7 @@ func main() {
 		trim:   *trimQuotes,
 		sum:    *sum,
 		avg:    *avg,
+		mop:    *mop,
 	}
 
 	var r io.Reader
@@ -95,6 +99,7 @@ func run(r io.Reader, w io.Writer, cfg config) {
 	var lines = bufio.NewScanner(r)
 	lines.Split(bufio.ScanLines)
 	var data []float64
+	uniqs := make(map[string]int)
 
 	computeStats := cfg.avg || cfg.sum
 
@@ -118,6 +123,8 @@ func run(r io.Reader, w io.Writer, cfg config) {
 						continue
 					}
 					data = append(data, num)
+				} else if cfg.mop {
+					uniqs[word]++
 				} else {
 					fmt.Fprintln(w, word)
 				}
@@ -125,12 +132,36 @@ func run(r io.Reader, w io.Writer, cfg config) {
 		}
 	}
 
-	if len(data) > 0 {
+	if cfg.mop {
+		/*
+			for k, v := range uniqs {
+				fmt.Fprintf(w, "%s: %d\n", k, v)
+			}
+		*/
+		prettyPrint(uniqs)
+	} else if len(data) > 0 {
 		if cfg.sum {
 			fmt.Fprintln(w, sumOp(data))
 		} else if cfg.avg {
 			fmt.Fprintln(w, avgOp(data))
 		}
+	}
+}
+
+func prettyPrint(m map[string]int) {
+	var maxLenKey int
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		if len(k) > maxLenKey {
+			maxLenKey = len(k)
+		}
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		v := m[k]
+		fmt.Printf("%s:%s %d\n", k, strings.Repeat(" ", maxLenKey-len(k)), v)
 	}
 }
 
