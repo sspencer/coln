@@ -10,6 +10,16 @@ function coln
     end
 end
 ```
+## Usage
+
+```
+Print column from STDIN or filename
+USAGE: coln 3 filename.txt
+  -avg  Calculate the average of all numbers in the column
+  -map  Count unique strings
+  -q    Strip quotes
+  -sum  Calculate the sum of all numbers in the column
+```
 
 ## Examples
 
@@ -36,6 +46,24 @@ b = "two";
 $ coln -q 3 input2.txt
 one
 two
+
+$ cat input3.txt
+one 1
+two 2
+three 3
+
+$ coln -sum 2 input3.txt
+6
+
+$ cat input4.txt
+one   two three
+three two one
+zero  one zero
+two   two two 
+
+$ coln -map 2 input4.txt
+one: 1
+two: 3
 ```
 
 ## Install
